@@ -11,7 +11,6 @@ import {
 import type { Trader, Transaction } from "../../types";
 import CreditScoreCard from "../../components/features/CreditScoreCard";
 import VirtualAccountCard from "../../components/features/VirtualAccountCard";
-import SimulatePaymentButton from "../../components/features/SimulatePaymentButton";
 import TransactionRow from "../../components/features/TransactionRow";
 import { CardSkeleton } from "../../components/ui/Skeleton";
 import { toast } from "../../components/ui/Toast";
@@ -106,28 +105,49 @@ export default function TraderHome() {
           </div>
         )}
 
-        {/* Simulate payment */}
-        <div className="bg-white rounded-2xl border border-border p-6 shadow-sm space-y-4">
-          <div>
-            <p className="text-xs font-medium text-muted uppercase tracking-wide mb-1">
-              Demo Tool
-            </p>
-            <h3 className="text-base font-semibold text-dark">
-              Simulate a Payment
-            </h3>
-            <p className="text-text-sub text-xs mt-1">
-              Watch the credit score update in real time after payment
-            </p>
+        {trader?.squadVirtualAccount?.accountNumber ? (
+          <div className="bg-white rounded-2xl border border-border p-6 shadow-sm space-y-4">
+            <div>
+              <p className="text-xs font-medium text-muted uppercase tracking-wide mb-1">
+                How Your Score Updates
+              </p>
+              <h3 className="text-base font-semibold text-dark">
+                Live Credit Scoring
+              </h3>
+              <p className="text-text-sub text-xs mt-1">
+                Every payment you make to workers automatically updates your
+                credit score
+              </p>
+            </div>
+            <div className="space-y-2">
+              {[
+                { step: "1", text: "Pay a worker via the Employer tab" },
+                { step: "2", text: "Squad Transfer processes the wage" },
+                { step: "3", text: "AI model recalculates your score" },
+                { step: "4", text: "Dashboard updates automatically" },
+              ].map((item) => (
+                <div key={item.step} className="flex items-center gap-3">
+                  <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+                    <span className="text-xs font-bold text-primary">
+                      {item.step}
+                    </span>
+                  </div>
+                  <p className="text-xs text-text-sub">{item.text}</p>
+                </div>
+              ))}
+            </div>
+            <div
+              className="w-full h-10 bg-primary/5 border border-primary/20 rounded-btn flex items-center justify-center gap-2 cursor-pointer hover:bg-primary/10 transition-all"
+              onClick={() => (window.location.href = "/trader/employer")}
+            >
+              <span className="text-sm font-semibold text-primary">
+                Go to Employer Tab →
+              </span>
+            </div>
           </div>
-          {trader?.squadVirtualAccount?.accountNumber ? (
-            <SimulatePaymentButton
-              virtualAccountNumber={trader.squadVirtualAccount.accountNumber}
-              traderId={trader._id}
-            />
-          ) : (
-            <p className="text-muted text-sm">No virtual account available</p>
-          )}
-        </div>
+        ) : (
+          <p className="text-muted text-sm">No virtual account available</p>
+        )}
       </div>
 
       {/* Stats row */}

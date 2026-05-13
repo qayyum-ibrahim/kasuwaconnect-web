@@ -1,33 +1,75 @@
 import { useState, useEffect, useCallback } from "react";
 import { Briefcase, Plus, Users, CheckCircle } from "lucide-react";
 import { useAuthStore } from "../../store/useAuthStore";
-import { useAppStore }  from "../../store/useAppStore";
+import { useAppStore } from "../../store/useAppStore";
 import {
-  getJobs, createJob, getApplicants,
-  hireApplicant, payWorker,
+  getJobs,
+  createJob,
+  getApplicants,
+  hireApplicant,
+  payWorker,
 } from "../../services/api";
 import type { Job, Applicant } from "../../types";
-import Button   from "../../components/ui/Button";
-import Input    from "../../components/ui/Input";
+import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
 import { CardSkeleton } from "../../components/ui/Skeleton";
 import { toast } from "../../components/ui/Toast";
+import { getTrader } from "../../services/api";
 
 // ── Sub-tab type ──────────────────────────────────────────────────────────────
 type Tab = "active" | "post" | "applicants";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 const CATEGORIES = [
-  "food","clothing","electronics","artisan","transport","agriculture","other",
+  "food",
+  "clothing",
+  "electronics",
+  "artisan",
+  "transport",
+  "agriculture",
+  "other",
 ];
-const LANGUAGES = ["english","pidgin","yoruba","igbo","hausa","other"];
-const EXPERIENCE = ["none","beginner","intermediate","experienced"];
-const FREQUENCIES = ["hourly","daily","weekly","monthly","per_gig"];
+const LANGUAGES = ["english", "pidgin", "yoruba", "igbo", "hausa", "other"];
+const EXPERIENCE = ["none", "beginner", "intermediate", "experienced"];
+const FREQUENCIES = ["hourly", "daily", "weekly", "monthly", "per_gig"];
 const NIGERIAN_STATES = [
-  "Abia","Adamawa","Akwa Ibom","Anambra","Bauchi","Bayelsa","Benue","Borno",
-  "Cross River","Delta","Ebonyi","Edo","Ekiti","Enugu","FCT","Gombe","Imo",
-  "Jigawa","Kaduna","Kano","Katsina","Kebbi","Kogi","Kwara","Lagos","Nasarawa",
-  "Niger","Ogun","Ondo","Osun","Oyo","Plateau","Rivers","Sokoto","Taraba",
-  "Yobe","Zamfara",
+  "Abia",
+  "Adamawa",
+  "Akwa Ibom",
+  "Anambra",
+  "Bauchi",
+  "Bayelsa",
+  "Benue",
+  "Borno",
+  "Cross River",
+  "Delta",
+  "Ebonyi",
+  "Edo",
+  "Ekiti",
+  "Enugu",
+  "FCT",
+  "Gombe",
+  "Imo",
+  "Jigawa",
+  "Kaduna",
+  "Kano",
+  "Katsina",
+  "Kebbi",
+  "Kogi",
+  "Kwara",
+  "Lagos",
+  "Nasarawa",
+  "Niger",
+  "Ogun",
+  "Ondo",
+  "Osun",
+  "Oyo",
+  "Plateau",
+  "Rivers",
+  "Sokoto",
+  "Taraba",
+  "Yobe",
+  "Zamfara",
 ];
 
 // ── Tier badge helper ─────────────────────────────────────────────────────────
@@ -48,11 +90,11 @@ const NIGERIAN_STATES = [
 // ── Match % badge ─────────────────────────────────────────────────────────────
 function MatchBadge({ pct }: { pct: number }) {
   const color =
-    pct >= 90 ? "bg-success" :
-    pct >= 70 ? "bg-warning" :
-                "bg-muted";
+    pct >= 90 ? "bg-success" : pct >= 70 ? "bg-warning" : "bg-muted";
   return (
-    <span className={`${color} text-white text-xs font-bold px-2.5 py-1 rounded-full`}>
+    <span
+      className={`${color} text-white text-xs font-bold px-2.5 py-1 rounded-full`}
+    >
       {pct}% match
     </span>
   );
@@ -62,10 +104,10 @@ function MatchBadge({ pct }: { pct: number }) {
 // MAIN COMPONENT
 // ─────────────────────────────────────────────────────────────────────────────
 export default function TraderEmployer() {
-  const session   = useAuthStore((s) => s.session);
-  const trader    = useAppStore((s) => s.trader);
-  const [tab, setTab]         = useState<Tab>("active");
-  const [jobs, setJobs]       = useState<Job[]>([]);
+  const session = useAuthStore((s) => s.session);
+  const trader = useAppStore((s) => s.trader);
+  const [tab, setTab] = useState<Tab>("active");
+  const [jobs, setJobs] = useState<Job[]>([]);
   const [loadingJobs, setLoadingJobs] = useState(true);
 
   // ── Fetch trader's jobs ────────────────────────────────────────────────────
@@ -73,13 +115,14 @@ export default function TraderEmployer() {
     if (!session?.id) return;
     setLoadingJobs(true);
     try {
-      const res  = await getJobs();
-      const all  = (res.data.data ?? []) as Job[];
+      const res = await getJobs();
+      const all = (res.data.data ?? []) as Job[];
       // Filter to only this trader's jobs
       const mine = all.filter((j) => {
-        const tid = typeof j.traderId === "string"
-          ? j.traderId
-          : (j.traderId as any)?._id;
+        const tid =
+          typeof j.traderId === "string"
+            ? j.traderId
+            : (j.traderId as any)?._id;
         return tid === session.id;
       });
       setJobs(mine);
@@ -90,12 +133,14 @@ export default function TraderEmployer() {
     }
   }, [session?.id]);
 
-  useEffect(() => { fetchJobs(); }, [fetchJobs]);
+  useEffect(() => {
+    fetchJobs();
+  }, [fetchJobs]);
 
   const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
-    { id: "active",     label: "Active Jobs",  icon: <Briefcase size={15} /> },
-    { id: "post",       label: "Post a Job",   icon: <Plus size={15} /> },
-    { id: "applicants", label: "Applicants",   icon: <Users size={15} /> },
+    { id: "active", label: "Active Jobs", icon: <Briefcase size={15} /> },
+    { id: "post", label: "Post a Job", icon: <Plus size={15} /> },
+    { id: "applicants", label: "Applicants", icon: <Users size={15} /> },
   ];
 
   return (
@@ -116,9 +161,10 @@ export default function TraderEmployer() {
             className={`
               flex items-center gap-2 px-5 py-2.5 rounded-[10px] text-sm font-semibold
               transition-all duration-200
-              ${tab === t.id
-                ? "bg-white text-dark shadow-sm"
-                : "text-muted hover:text-dark"
+              ${
+                tab === t.id
+                  ? "bg-white text-dark shadow-sm"
+                  : "text-muted hover:text-dark"
               }
             `}
           >
@@ -129,26 +175,26 @@ export default function TraderEmployer() {
       </div>
 
       {/* Tab content */}
-      {tab === "active"     && (
+      {tab === "active" && (
         <ActiveJobsTab
           jobs={jobs}
           loading={loadingJobs}
           onViewApplicants={() => setTab("applicants")}
         />
       )}
-      {tab === "post"       && (
+      {tab === "post" && (
         <PostJobTab
           traderId={session?.id ?? ""}
           traderLocation={trader?.marketLocation ?? ""}
           traderState={trader?.state ?? ""}
-          onSuccess={() => { fetchJobs(); setTab("active"); }}
+          onSuccess={() => {
+            fetchJobs();
+            setTab("active");
+          }}
         />
       )}
       {tab === "applicants" && (
-        <ApplicantsTab
-          jobs={jobs}
-          traderId={session?.id ?? ""}
-        />
+        <ApplicantsTab jobs={jobs} traderId={session?.id ?? ""} />
       )}
     </div>
   );
@@ -158,7 +204,9 @@ export default function TraderEmployer() {
 // ACTIVE JOBS TAB
 // ─────────────────────────────────────────────────────────────────────────────
 function ActiveJobsTab({
-  jobs, loading, onViewApplicants,
+  jobs,
+  loading,
+  onViewApplicants,
 }: {
   jobs: Job[];
   loading: boolean;
@@ -189,24 +237,31 @@ function ActiveJobsTab({
             <div className="flex-1">
               <div className="flex items-center gap-3 flex-wrap">
                 <h3 className="font-bold text-dark text-lg">{job.title}</h3>
-                <span className={`
+                <span
+                  className={`
                   text-xs font-semibold px-2.5 py-1 rounded-full
-                  ${job.isOpen && !job.isFilled
-                    ? "bg-success/10 text-success"
-                    : "bg-muted/10 text-muted"
+                  ${
+                    job.isOpen && !job.isFilled
+                      ? "bg-success/10 text-success"
+                      : "bg-muted/10 text-muted"
                   }
-                `}>
+                `}
+                >
                   {job.isFilled ? "Filled" : job.isOpen ? "Open" : "Closed"}
                 </span>
               </div>
               <p className="text-text-sub text-sm mt-1">{job.description}</p>
               <div className="flex flex-wrap gap-4 mt-3 text-sm text-text-sub">
                 <span>
-                  💰 <strong className="text-primary">
+                  💰{" "}
+                  <strong className="text-primary">
                     ₦{job.payAmount.toLocaleString()}
-                  </strong> / {job.payFrequency}
+                  </strong>{" "}
+                  / {job.payFrequency}
                 </span>
-                <span>📍 {job.marketLocation}, {job.state}</span>
+                <span>
+                  📍 {job.marketLocation}, {job.state}
+                </span>
                 <span>👥 {job.applicants?.length ?? 0} applicant(s)</span>
               </div>
               {job.skillsRequired?.length > 0 && (
@@ -245,28 +300,31 @@ function ActiveJobsTab({
 // POST JOB TAB
 // ─────────────────────────────────────────────────────────────────────────────
 function PostJobTab({
-  traderId, traderLocation, traderState, onSuccess,
+  traderId,
+  traderLocation,
+  traderState,
+  onSuccess,
 }: {
-  traderId:        string;
-  traderLocation:  string;
-  traderState:     string;
-  onSuccess:       () => void;
+  traderId: string;
+  traderLocation: string;
+  traderState: string;
+  onSuccess: () => void;
 }) {
   const [form, setForm] = useState({
-    title:             "",
-    description:       "",
-    category:          "",
-    skillsRequired:    [] as string[],
+    title: "",
+    description: "",
+    category: "",
+    skillsRequired: [] as string[],
     languagesRequired: [] as string[],
-    experienceLevel:   "none",
-    payAmount:         "",
-    payFrequency:      "daily",
-    marketLocation:    traderLocation,
-    state:             traderState,
+    experienceLevel: "none",
+    payAmount: "",
+    payFrequency: "daily",
+    marketLocation: traderLocation,
+    state: traderState,
   });
   const [skillInput, setSkillInput] = useState("");
-  const [loading,    setLoading]    = useState(false);
-  const [errors,     setErrors]     = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const set = (key: string, val: unknown) =>
     setForm((f) => ({ ...f, [key]: val }));
@@ -280,25 +338,28 @@ function PostJobTab({
   };
 
   const removeSkill = (sk: string) =>
-    set("skillsRequired", form.skillsRequired.filter((s) => s !== sk));
+    set(
+      "skillsRequired",
+      form.skillsRequired.filter((s) => s !== sk),
+    );
 
   const toggleLang = (lang: string) => {
     const cur = form.languagesRequired;
     set(
       "languagesRequired",
-      cur.includes(lang) ? cur.filter((l) => l !== lang) : [...cur, lang]
+      cur.includes(lang) ? cur.filter((l) => l !== lang) : [...cur, lang],
     );
   };
 
   const validate = () => {
     const e: Record<string, string> = {};
-    if (!form.title.trim())       e.title       = "Job title is required";
+    if (!form.title.trim()) e.title = "Job title is required";
     if (!form.description.trim()) e.description = "Description is required";
-    if (!form.category)           e.category    = "Select a category";
+    if (!form.category) e.category = "Select a category";
     if (!form.payAmount || isNaN(Number(form.payAmount)))
-                                  e.payAmount   = "Enter a valid pay amount";
-    if (!form.marketLocation)     e.marketLocation = "Market location is required";
-    if (!form.state)              e.state       = "State is required";
+      e.payAmount = "Enter a valid pay amount";
+    if (!form.marketLocation) e.marketLocation = "Market location is required";
+    if (!form.state) e.state = "State is required";
     setErrors(e);
     return Object.keys(e).length === 0;
   };
@@ -460,12 +521,12 @@ function PostJobTab({
           >
             <option value="">Select state</option>
             {NIGERIAN_STATES.map((st) => (
-              <option key={st} value={st}>{st}</option>
+              <option key={st} value={st}>
+                {st}
+              </option>
             ))}
           </select>
-          {errors.state && (
-            <p className="text-xs text-error">{errors.state}</p>
-          )}
+          {errors.state && <p className="text-xs text-error">{errors.state}</p>}
         </div>
 
         {/* Skills */}
@@ -477,7 +538,9 @@ function PostJobTab({
             <input
               value={skillInput}
               onChange={(e) => setSkillInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addSkill())}
+              onKeyDown={(e) =>
+                e.key === "Enter" && (e.preventDefault(), addSkill())
+              }
               placeholder='Type a skill and press Enter (e.g. "sorting")'
               className="flex-1 h-12 border border-border rounded-card px-4 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
@@ -517,9 +580,10 @@ function PostJobTab({
                 onClick={() => toggleLang(lang)}
                 className={`
                   text-xs font-semibold px-3 py-1.5 rounded-full border transition-all
-                  ${form.languagesRequired.includes(lang)
-                    ? "bg-primary text-white border-primary"
-                    : "border-border text-text-sub hover:border-primary hover:text-primary"
+                  ${
+                    form.languagesRequired.includes(lang)
+                      ? "bg-primary text-white border-primary"
+                      : "border-border text-text-sub hover:border-primary hover:text-primary"
                   }
                 `}
               >
@@ -542,26 +606,22 @@ function PostJobTab({
 // ─────────────────────────────────────────────────────────────────────────────
 // APPLICANTS TAB
 // ─────────────────────────────────────────────────────────────────────────────
-function ApplicantsTab({
-  jobs, traderId,
-}: {
-  jobs:     Job[];
-  traderId: string;
-}) {
-  const [selectedJob,  setSelectedJob]  = useState<Job | null>(null);
-  const [applicants,   setApplicants]   = useState<Applicant[]>([]);
-  const [loading,      setLoading]      = useState(false);
-  const [hiring,       setHiring]       = useState<string | null>(null);
-  const [hiredId,      setHiredId]      = useState<string | null>(null);
-  const [showPay,      setShowPay]      = useState(false);
-  const [payForm,      setPayForm]      = useState({
-    amount:        "",
-    bankCode:      "000",
+function ApplicantsTab({ jobs, traderId }: { jobs: Job[]; traderId: string }) {
+  const setTrader = useAppStore((s) => s.setTrader);
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const [applicants, setApplicants] = useState<Applicant[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [hiring, setHiring] = useState<string | null>(null);
+  const [hiredId, setHiredId] = useState<string | null>(null);
+  const [showPay, setShowPay] = useState(false);
+  const [payForm, setPayForm] = useState({
+    amount: "",
+    bankCode: "000",
     accountNumber: "",
-    accountName:   "",
+    accountName: "",
   });
-  const [paying,       setPaying]       = useState(false);
-  const [payDone,      setPayDone]      = useState(false);
+  const [paying, setPaying] = useState(false);
+  const [payDone, setPayDone] = useState(false);
 
   const openJobs = jobs.filter((j) => j.isOpen && !j.isFilled);
 
@@ -573,7 +633,7 @@ function ApplicantsTab({
     setPayDone(false);
     setLoading(true);
     try {
-      const res  = await getApplicants(job._id);
+      const res = await getApplicants(job._id);
       const data = res.data;
       setApplicants(data.applicants ?? []);
       if (data.job?.hiredSeeker) setHiredId(data.job.hiredSeeker);
@@ -594,9 +654,9 @@ function ApplicantsTab({
       if (hired) {
         setPayForm((f) => ({
           ...f,
-          amount:        String(selectedJob.payAmount),
+          amount: String(selectedJob.payAmount),
           accountNumber: hired.squadVirtualAccount?.accountNumber ?? "",
-          accountName:   `${hired.firstName} ${hired.lastName}`,
+          accountName: `${hired.firstName} ${hired.lastName}`,
         }));
       }
       setShowPay(true);
@@ -618,17 +678,53 @@ function ApplicantsTab({
     try {
       await payWorker({
         traderId,
-        seekerId:      hiredId,
-        jobId:         selectedJob._id,
-        amount:        Number(payForm.amount),
-        bankCode:      payForm.bankCode,
+        seekerId: hiredId,
+        jobId: selectedJob._id,
+        amount: Number(payForm.amount),
+        bankCode: payForm.bankCode,
         accountNumber: payForm.accountNumber,
-        accountName:   payForm.accountName,
+        accountName: payForm.accountName,
       });
+
       setPayDone(true);
-      toast.success(`₦${Number(payForm.amount).toLocaleString()} sent via Squad!`);
-    } catch {
-      toast.error("Payout failed. Check account details and try again.");
+      toast.success(
+        `₦${Number(payForm.amount).toLocaleString()} sent via Squad!`,
+      );
+
+      // Poll for credit score update — backend triggers it async after payout
+      const previousScore = useAppStore.getState().trader?.creditScore ?? 0;
+      let attempts = 0;
+      const maxAttempts = 6;
+
+      const poll = async () => {
+        attempts++;
+        try {
+          const res = await getTrader(traderId);
+          const updated = res.data.data;
+
+          if (
+            updated.creditScore !== previousScore ||
+            attempts >= maxAttempts
+          ) {
+            setTrader(updated);
+            if (updated.creditScore !== previousScore) {
+              toast.success(
+                `Credit score updated to ${updated.creditScore} — payment recorded as positive signal`,
+              );
+            }
+          } else {
+            setTimeout(poll, 2000);
+          }
+        } catch {
+          if (attempts < maxAttempts) setTimeout(poll, 2000);
+        }
+      };
+
+      // Start polling after 2 seconds to give backend time to process
+      setTimeout(poll, 2000);
+    } catch (err: any) {
+      const msg = err?.response?.data?.message ?? "Payout failed";
+      toast.error(msg);
     } finally {
       setPaying(false);
     }
@@ -648,7 +744,6 @@ function ApplicantsTab({
 
   return (
     <div className="space-y-6">
-
       {/* Job selector */}
       <div className="bg-white rounded-2xl border border-border p-6 shadow-sm">
         <p className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
@@ -661,9 +756,10 @@ function ApplicantsTab({
               onClick={() => fetchApplicants(job)}
               className={`
                 w-full text-left px-5 py-4 rounded-xl border-2 transition-all duration-200
-                ${selectedJob?._id === job._id
-                  ? "border-primary bg-primary/5"
-                  : "border-border hover:border-primary/40"
+                ${
+                  selectedJob?._id === job._id
+                    ? "border-primary bg-primary/5"
+                    : "border-border hover:border-primary/40"
                 }
               `}
             >
@@ -712,8 +808,8 @@ function ApplicantsTab({
           ) : (
             <div className="divide-y divide-border">
               {applicants.map((applicant) => {
-                const isHired   = hiredId === applicant._id;
-                const anyHired  = !!hiredId;
+                const isHired = hiredId === applicant._id;
+                const anyHired = !!hiredId;
 
                 return (
                   <div key={applicant._id} className="p-6">
@@ -722,7 +818,8 @@ function ApplicantsTab({
                         {/* Header row */}
                         <div className="flex items-center gap-3 flex-wrap">
                           <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center font-bold text-primary text-sm shrink-0">
-                            {applicant.firstName[0]}{applicant.lastName[0]}
+                            {applicant.firstName[0]}
+                            {applicant.lastName[0]}
                           </div>
                           <div>
                             <p className="font-bold text-dark">
@@ -872,16 +969,44 @@ function ApplicantsTab({
           </div>
           <h3 className="text-xl font-bold text-dark">Payment Sent!</h3>
           <p className="text-text-sub text-sm mt-2">
-            ₦{Number(payForm.amount).toLocaleString()} successfully sent via Squad Transfer
+            ₦{Number(payForm.amount).toLocaleString()} successfully sent via
+            Squad Transfer
           </p>
           <p className="text-muted text-xs mt-1">
             The worker's wallet has been updated
           </p>
           <div className="mt-4 bg-white rounded-xl border border-border px-6 py-4 inline-block">
-            <p className="text-xs text-muted uppercase tracking-wide">Paid to</p>
+            <p className="text-xs text-muted uppercase tracking-wide">
+              Paid to
+            </p>
             <p className="font-bold text-dark mt-1">{payForm.accountName}</p>
             <p className="text-text-sub text-sm">{payForm.accountNumber}</p>
           </div>
+          {/* Credit score update notice */}
+          <div className="mt-4 bg-white rounded-xl border border-border px-6 py-4 inline-block text-left">
+            <p className="text-xs text-muted uppercase tracking-wide">
+              Paid to
+            </p>
+            <p className="font-bold text-dark mt-1">{payForm.accountName}</p>
+            <p className="text-text-sub text-sm">{payForm.accountNumber}</p>
+          </div>
+
+          <div className="mt-4 bg-primary/5 border border-primary/20 rounded-xl px-6 py-3">
+            <p className="text-xs text-primary font-semibold">
+              📊 Credit score updating in the background...
+            </p>
+            <p className="text-xs text-text-sub mt-1">
+              This payment is being recorded as a positive signal in your credit
+              profile. Check your dashboard to see the updated score.
+            </p>
+          </div>
+
+          <button
+            onClick={() => (window.location.href = "/trader")}
+            className="mt-4 text-sm font-semibold text-primary hover:underline"
+          >
+            View updated dashboard →
+          </button>
         </div>
       )}
     </div>
