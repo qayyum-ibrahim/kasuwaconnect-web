@@ -41,10 +41,12 @@ export default function App() {
   const { initAuth, isLoading } = useAuthStore();
   const { toasts, removeToast } = useToastManager();
 
+  // Replace the existing silent fetch line with this
   useEffect(() => {
     initAuth();
-    // Wake the backend silently
+    // Wake both Render services on app load
     fetch("https://kasuwaconnect-backend.onrender.com/health").catch(() => {});
+    fetch("https://kasuwaconnect-ai.onrender.com/health").catch(() => {});
   }, []);
 
   if (isLoading) {
@@ -60,51 +62,51 @@ export default function App() {
 
   return (
     <>
-     <ToastContainer toasts={toasts} onRemove={removeToast} />
-    <BrowserRouter>
-      <Routes>
-        {/* Root */}
-        <Route path="/" element={<RootRedirect />} />
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
+      <BrowserRouter>
+        <Routes>
+          {/* Root */}
+          <Route path="/" element={<RootRedirect />} />
 
-        {/* Auth */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/mode-select" element={<ModeSelectPage />} />
-        <Route path="/register/trader" element={<RegisterTrader />} />
-        <Route path="/register/seeker" element={<RegisterSeeker />} />
+          {/* Auth */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/mode-select" element={<ModeSelectPage />} />
+          <Route path="/register/trader" element={<RegisterTrader />} />
+          <Route path="/register/seeker" element={<RegisterSeeker />} />
 
-        {/* Trader dashboard */}
-        <Route
-          path="/trader"
-          element={
-            <ProtectedRoute>
-              <TraderLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<TraderHome />} />
-          <Route path="payments" element={<TraderPayments />} />
-          <Route path="employer" element={<TraderEmployer />} />
-          <Route path="profile" element={<TraderProfile />} />
-        </Route>
+          {/* Trader dashboard */}
+          <Route
+            path="/trader"
+            element={
+              <ProtectedRoute>
+                <TraderLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<TraderHome />} />
+            <Route path="payments" element={<TraderPayments />} />
+            <Route path="employer" element={<TraderEmployer />} />
+            <Route path="profile" element={<TraderProfile />} />
+          </Route>
 
-        {/* Seeker dashboard */}
-        <Route
-          path="/seeker"
-          element={
-            <ProtectedRoute>
-              <SeekerLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<SeekerHome />} />
-          <Route path="jobs" element={<SeekerJobs />} />
-          <Route path="profile" element={<SeekerProfile />} />
-        </Route>
+          {/* Seeker dashboard */}
+          <Route
+            path="/seeker"
+            element={
+              <ProtectedRoute>
+                <SeekerLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<SeekerHome />} />
+            <Route path="jobs" element={<SeekerJobs />} />
+            <Route path="profile" element={<SeekerProfile />} />
+          </Route>
 
-        {/* Fallback */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </BrowserRouter>
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
     </>
   );
 }
