@@ -635,8 +635,27 @@ function ApplicantsTab({ jobs, traderId }: { jobs: Job[]; traderId: string }) {
     try {
       const res = await getApplicants(job._id);
       const data = res.data;
-      setApplicants(data.applicants ?? []);
-      if (data.job?.hiredSeeker) setHiredId(data.job.hiredSeeker);
+      const fetchedApplicants = data.applicants ?? [];
+      setApplicants(fetchedApplicants);
+
+      const resolvedHiredId =
+        data.job?.hiredSeeker || (job.hiredSeeker as string | null);
+      if (resolvedHiredId) {
+        setHiredId(resolvedHiredId);
+        // Prefill pay form for already-hired applicants
+        const hiredApplicant = fetchedApplicants.find(
+          (a: Applicant) => a._id === resolvedHiredId,
+        );
+        if (hiredApplicant) {
+          setPayForm({
+            amount: String(job.payAmount),
+            bankCode: "000",
+            accountNumber:
+              hiredApplicant.squadVirtualAccount?.accountNumber ?? "",
+            accountName: `${hiredApplicant.firstName} ${hiredApplicant.lastName}`,
+          });
+        }
+      }
     } catch {
       toast.error("Failed to load applicants");
     } finally {
@@ -812,7 +831,27 @@ function ApplicantsTab({ jobs, traderId }: { jobs: Job[]; traderId: string }) {
                 const anyHired = !!hiredId;
 
                 return (
-                  <div key={applicant._id} className="p-6">
+                  <div
+                    key={applicant._id}
+                    className="p-6"
+                    onClick={() => {
+                      if (isHired && !payDone) {
+                        setPayForm((f) => ({
+                          amount:
+                            f.amount || String(selectedJob?.payAmount ?? ""),
+                          bankCode: f.bankCode || "000",
+                          accountNumber:
+                            (f.accountNumber ||
+                              applicant.squadVirtualAccount?.accountNumber) ??
+                            "",
+                          accountName:
+                            f.accountName ||
+                            `${applicant.firstName} ${applicant.lastName}`,
+                        }));
+                        setShowPay(true);
+                      }
+                    }}
+                  >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
                         {/* Header row */}
@@ -975,13 +1014,7 @@ function ApplicantsTab({ jobs, traderId }: { jobs: Job[]; traderId: string }) {
           <p className="text-muted text-xs mt-1">
             The worker's wallet has been updated
           </p>
-          <div className="mt-4 bg-white rounded-xl border border-border px-6 py-4 inline-block">
-            <p className="text-xs text-muted uppercase tracking-wide">
-              Paid to
-            </p>
-            <p className="font-bold text-dark mt-1">{payForm.accountName}</p>
-            <p className="text-text-sub text-sm">{payForm.accountNumber}</p>
-          </div>
+        
           {/* Credit score update notice */}
           <div className="mt-4 bg-white rounded-xl border border-border px-6 py-4 inline-block text-left">
             <p className="text-xs text-muted uppercase tracking-wide">
