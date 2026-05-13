@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "./store/useAuthStore";
+import { ToastContainer, useToastManager } from "./components/ui/Toast";
 
 // Auth pages
 import LoginPage from "./pages/auth/LoginPage";
@@ -38,6 +39,7 @@ function RootRedirect() {
 
 export default function App() {
   const { initAuth, isLoading } = useAuthStore();
+  const { toasts, removeToast } = useToastManager();
 
   useEffect(() => {
     initAuth();
@@ -57,6 +59,8 @@ export default function App() {
   }
 
   return (
+    <>
+     <ToastContainer toasts={toasts} onRemove={removeToast} />
     <BrowserRouter>
       <Routes>
         {/* Root */}
@@ -101,5 +105,6 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
+    </>
   );
 }
