@@ -17,7 +17,7 @@ export default function LoginPage() {
   const [phone, setPhone] = useState("");
   const [pin, setPin] = useState("");
   const [userName, setUserName] = useState("");
-  const [userRole, setUserRole] = useState<"trader" | "seeker" | null>(null);
+  const [_userRole, setUserRole] = useState<"trader" | "seeker" | null>(null);
   const [loading, setLoading] = useState(false);
   const [phoneErr, setPhoneErr] = useState("");
   const [pinErr, setPinErr] = useState("");

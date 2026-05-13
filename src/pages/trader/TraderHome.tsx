@@ -13,7 +13,7 @@ import CreditScoreCard from "../../components/features/CreditScoreCard";
 import VirtualAccountCard from "../../components/features/VirtualAccountCard";
 import SimulatePaymentButton from "../../components/features/SimulatePaymentButton";
 import TransactionRow from "../../components/features/TransactionRow";
-import { CardSkeleton, Skeleton } from "../../components/ui/Skeleton";
+import { CardSkeleton } from "../../components/ui/Skeleton";
 import { toast } from "../../components/ui/Toast";
 
 export default function TraderHome() {

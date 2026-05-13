@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, ToggleLeft, ToggleRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useAuthStore } from "../../store/useAuthStore";
 import { useAppStore } from "../../store/useAppStore";
 import { getJobSeeker, getSeekerEarnings } from "../../services/api";
@@ -17,7 +17,7 @@ export default function SeekerHome() {
 
   const [earnings, setEarnings] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
-  const [summary, setSummary] = useState<any>(null);
+  const [_summary, setSummary] = useState<any>(null);
 
   const fetchData = useCallback(async () => {
     if (!session?.id) return;

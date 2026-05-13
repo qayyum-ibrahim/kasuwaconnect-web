@@ -31,19 +31,19 @@ const NIGERIAN_STATES = [
 ];
 
 // ── Tier badge helper ─────────────────────────────────────────────────────────
-function TierBadge({ tier }: { tier: string }) {
-  const map: Record<string, string> = {
-    high:     "bg-success text-white",
-    medium:   "bg-warning text-white",
-    low:      "bg-primary text-white",
-    unscored: "bg-muted text-white",
-  };
-  return (
-    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${map[tier] ?? map.unscored}`}>
-      {tier}
-    </span>
-  );
-}
+// function TierBadge({ tier }: { tier: string }) {
+//   const map: Record<string, string> = {
+//     high:     "bg-success text-white",
+//     medium:   "bg-warning text-white",
+//     low:      "bg-primary text-white",
+//     unscored: "bg-muted text-white",
+//   };
+//   return (
+//     <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${map[tier] ?? map.unscored}`}>
+//       {tier}
+//     </span>
+//   );
+// }
 
 // ── Match % badge ─────────────────────────────────────────────────────────────
 function MatchBadge({ pct }: { pct: number }) {

@@ -1,18 +1,21 @@
-import { useNavigate }  from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store/useAuthStore";
-import { useAppStore }  from "../../store/useAppStore";
+import { useAppStore } from "../../store/useAppStore";
 import {
-  User, Phone, MapPin,
-  LogOut, Briefcase, Languages,
-  ToggleLeft, ToggleRight,
+  User,
+  Phone,
+  MapPin,
+  LogOut,
+  Briefcase,
+  Languages,
 } from "lucide-react";
 
 export default function SeekerProfile() {
-  const navigate  = useNavigate();
-  const session   = useAuthStore((s) => s.session);
+  const navigate = useNavigate();
+  const session = useAuthStore((s) => s.session);
   const clearAuth = useAuthStore((s) => s.clearAuth);
-  const clearApp  = useAppStore((s)  => s.clearApp);
-  const seeker    = useAppStore((s)  => s.seeker);
+  const clearApp = useAppStore((s) => s.clearApp);
+  const seeker = useAppStore((s) => s.seeker);
 
   const handleLogout = () => {
     clearAuth();
@@ -43,11 +46,13 @@ export default function SeekerProfile() {
             <span className="bg-white/10 text-white text-xs font-bold px-2.5 py-1 rounded-full">
               Job Seeker
             </span>
-            <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
-              seeker?.isAvailable
-                ? "bg-success/20 text-success"
-                : "bg-muted/20 text-muted"
-            }`}>
+            <span
+              className={`text-xs font-bold px-2.5 py-1 rounded-full ${
+                seeker?.isAvailable
+                  ? "bg-success/20 text-success"
+                  : "bg-muted/20 text-muted"
+              }`}
+            >
               {seeker?.isAvailable ? "Available" : "Unavailable"}
             </span>
           </div>
@@ -73,9 +78,7 @@ export default function SeekerProfile() {
               key={stat.label}
               className="bg-white rounded-2xl border border-border p-5 shadow-sm text-center"
             >
-              <p className={`text-2xl font-bold ${stat.color}`}>
-                {stat.value}
-              </p>
+              <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
               <p className="text-xs text-muted mt-1">{stat.label}</p>
             </div>
           ))}
@@ -92,11 +95,31 @@ export default function SeekerProfile() {
         </div>
         <div className="divide-y divide-border">
           {[
-            { label: "Full name",  value: session?.name,   icon: <User size={15} className="text-muted" /> },
-            { label: "Phone",      value: session?.phone,  icon: <Phone size={15} className="text-muted" /> },
-            { label: "State",      value: seeker?.state,   icon: <MapPin size={15} className="text-muted" /> },
-            { label: "Location",   value: seeker?.marketLocation, icon: <MapPin size={15} className="text-muted" /> },
-            { label: "Experience", value: seeker?.experienceLevel, icon: <Briefcase size={15} className="text-muted" /> },
+            {
+              label: "Full name",
+              value: session?.name,
+              icon: <User size={15} className="text-muted" />,
+            },
+            {
+              label: "Phone",
+              value: session?.phone,
+              icon: <Phone size={15} className="text-muted" />,
+            },
+            {
+              label: "State",
+              value: seeker?.state,
+              icon: <MapPin size={15} className="text-muted" />,
+            },
+            {
+              label: "Location",
+              value: seeker?.marketLocation,
+              icon: <MapPin size={15} className="text-muted" />,
+            },
+            {
+              label: "Experience",
+              value: seeker?.experienceLevel,
+              icon: <Briefcase size={15} className="text-muted" />,
+            },
           ].map((row) => (
             <div key={row.label} className="px-6 py-4 flex items-center gap-4">
               <div className="w-8 h-8 bg-light-gray rounded-lg flex items-center justify-center shrink-0">
